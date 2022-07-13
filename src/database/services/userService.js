@@ -15,7 +15,6 @@ const jwtConfig = {
   algorithm: 'HS256',
 };
 
-// eslint-disable-next-line max-lines-per-function
 const create = async (body) => {
   const { error } = userSchema.validate(body);
   if (error) throw new CustomError(400, error.details[0].message);
@@ -24,8 +23,6 @@ const create = async (body) => {
       email: body.email,
     },
   });
-
-  // console.log('user  is new? -----------------', created);
   if (isAlreadyInUse) throw new CustomError(409, 'User already registered');
   await User.create(body);
   const token = jwt.sign({ data: body.email }, process.env.JWT_SECRET, jwtConfig);
@@ -34,6 +31,16 @@ const create = async (body) => {
   };
 };
 
+const show = () => {
+  const users = User.findAll({
+    attributes: {
+      exclude: ['password'],
+    },
+  });
+  return users;
+};
+
 module.exports = {
   create,
+  show,
 };
