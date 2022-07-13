@@ -9,7 +9,7 @@ const jwtConfig = {
 };
 
 const loginSchema = Joi.object({
-  email: Joi.string().required().email(),
+  email: Joi.string().required(),
   password: Joi.string().required(),
 }).messages({
   'any.required': 'Some required fields are missing',
