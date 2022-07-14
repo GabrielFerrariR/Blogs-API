@@ -13,6 +13,12 @@ const create = async (body) => {
   return category;
 };
 
+const show = async () => {
+  const users = await Category.findAll();
+  return users;
+};
+
 module.exports = {
   create,
+  show,
 };
