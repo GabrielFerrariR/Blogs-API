@@ -5,13 +5,13 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via NPM",
+      "name": "start",
       "request": "launch",
       "runtimeArgs": [
         "run-script",
-        "debug"
+        "start"
       ],
-      "runtimeExecutable": "nodemon",
+      "runtimeExecutable": "npm",
       "skipFiles": [
         "<node_internals>/**"
       ],
