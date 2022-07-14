@@ -9,9 +9,6 @@ module.exports = async (req, res, next) => {
     console.log(token);
     if (!token) throw new CustomError(401, 'Token not found');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log('-------------------------------------');
-    console.log('jwt content', decoded);
-    console.log('-------------------------------------');
     const user = await User.findOne({
       where: { email: decoded.data },
     });

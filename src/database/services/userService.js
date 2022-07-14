@@ -31,8 +31,8 @@ const create = async (body) => {
   };
 };
 
-const show = () => {
-  const users = User.findAll({
+const show = async () => {
+  const users = await User.findAll({
     attributes: {
       exclude: ['password'],
     },
@@ -40,7 +40,18 @@ const show = () => {
   return users;
 };
 
+const showUser = async (id) => {
+  const user = await User.findByPk(id, {
+    attributes: {
+      exclude: ['password'],
+    },
+  });
+  if (!user) throw new CustomError(404, 'User does not exist');
+  return user;
+};
+
 module.exports = {
   create,
   show,
+  showUser,
 };
