@@ -6,7 +6,6 @@ const { CustomError } = require('./error');
 module.exports = async (req, res, next) => {
   try {
     const token = req.headers.authorization;
-    console.log(token);
     if (!token) throw new CustomError(401, 'Token not found');
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findOne({

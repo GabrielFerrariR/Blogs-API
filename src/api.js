@@ -2,6 +2,7 @@ const express = require('express');
 const login = require('./database/controller/login');
 const { errorMiddleWare } = require('./database/middlewares/error');
 const userRoute = require('./database/routes/userRoute');
+const categoriesRoute = require('./database/routes/categoriesRoute');
 
 // ...
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 app.post('/login', login);
 app.use('/user', userRoute);
+app.use('/categories', categoriesRoute);
 app.use(errorMiddleWare);
 
 // ...
