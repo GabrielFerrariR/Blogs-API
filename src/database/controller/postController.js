@@ -48,10 +48,21 @@ const remove = async (req, res, next) => {
   }
 };
 
+const showByQ = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    const queryResult = await postService.showByQ(q);
+    res.status(200).json(queryResult);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
   show,
   getById,
   update,
   remove,
+  showByQ,
 };

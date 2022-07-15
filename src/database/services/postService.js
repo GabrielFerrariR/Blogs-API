@@ -100,10 +100,28 @@ const remove = async (postId, user) => {
   if (!deleted) throw new CustomError(401, 'Unauthorized user');
 };
 
+const showByQ = async (query) => {
+  if (!query) return show();
+  const queryResult = await BlogPost.findAll({
+    where: { [Op.or]: [{ title: {
+          [Op.like]: `%${query}%`,
+        },
+      }, { content: {
+          [Op.like]: `%${query}%`,
+        },
+      }],
+    },
+    include: [{ model: User, as: 'user', attributes: { exclude: ['password'] },
+    }, { model: Category, as: 'categories' }],
+  });
+  return queryResult;
+};
+
 module.exports = {
   create,
   show,
   getById,
   update,
   remove,
+  showByQ,
 };
