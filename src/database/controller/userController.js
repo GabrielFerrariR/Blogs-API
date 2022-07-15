@@ -28,8 +28,18 @@ const showUser = async (req, res, next) => {
   }
 };
 
+const remove = async (req, res, next) => {
+  try {
+     await userService.remove(req.user);
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
   show,
   showUser,
+  remove,
 };

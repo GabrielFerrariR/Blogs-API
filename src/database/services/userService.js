@@ -50,8 +50,19 @@ const showUser = async (id) => {
   return user;
 };
 
+const remove = async (user) => {
+  const { id } = user.dataValues;
+  await User.destroy({
+    where: { 
+      id, 
+    },
+  });
+  return null;
+};
+
 module.exports = {
   create,
   show,
   showUser,
+  remove,
 };

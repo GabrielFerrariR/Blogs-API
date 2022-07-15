@@ -97,7 +97,6 @@ const remove = async (postId, user) => {
       [Op.and]: [{ id: postId }, { userId: id }], 
     },
   });
-  
   if (!deleted) throw new CustomError(401, 'Unauthorized user');
 };
 
