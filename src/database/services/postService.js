@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const { Op } = require('sequelize');
 const { CustomError } = require('../middlewares/error');
 const { User, Category, BlogPost, PostCategory } = require('../models');
 
@@ -6,6 +7,14 @@ const postSchema = Joi.object({
   title: Joi.string().required(),
   content: Joi.string().required(),
   categoryIds: Joi.array().items(Joi.number().required()).required(),
+}).messages({
+  'any.required': 'Some required fields are missing',
+  'string.empty': 'Some required fields are missing',
+});
+
+const upPostSchema = Joi.object({
+  title: Joi.string().required(),
+  content: Joi.string().required(),
 }).messages({
   'any.required': 'Some required fields are missing',
   'string.empty': 'Some required fields are missing',
@@ -65,8 +74,23 @@ const getById = async (id) => {
   return post;
 };
 
+const update = async (body, user, postId) => {
+  const { error } = upPostSchema.validate(body);
+  if (error) throw new CustomError(400, error.details[0].message);
+  const { id } = user.dataValues;
+  const [post] = await BlogPost.update(body, {
+    where: { 
+      [Op.and]: [{ id: postId }, { userId: id }], 
+    },
+  });
+  if (!post) throw new CustomError(401, 'Unauthorized user');
+  
+  return getById(postId);
+};
+
 module.exports = {
   create,
   show,
   getById,
+  update,
 };

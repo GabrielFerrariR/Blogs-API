@@ -28,8 +28,19 @@ const getById = async (req, res, next) => {
   }
 };
 
+const update = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const post = await postService.update(req.body, req.user, id);
+    res.status(200).json(post);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   create,
   show,
   getById,
+  update,
 };
