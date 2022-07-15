@@ -38,6 +38,7 @@ const create = async (body, user) => {
   categoryIds.map(async (categoryId) => {
     await PostCategory.create({ postId: post.id, categoryId });
   });
+
   return post;
 };
 
@@ -88,9 +89,22 @@ const update = async (body, user, postId) => {
   return getById(postId);
 };
 
+const remove = async (postId, user) => {
+  const { id } = user.dataValues;
+  await getById(postId);
+  const deleted = await BlogPost.destroy({
+    where: { 
+      [Op.and]: [{ id: postId }, { userId: id }], 
+    },
+  });
+  
+  if (!deleted) throw new CustomError(401, 'Unauthorized user');
+};
+
 module.exports = {
   create,
   show,
   getById,
   update,
+  remove,
 };

@@ -1,4 +1,5 @@
 const errorMiddleWare = (err, _req, res, _next) => {
+  console.log('🚀 ~ file: error.js ~ line 11 ~ errorMiddleWare ~ err', err.message);
   if (err.statusCode) {
     return res.status(err.statusCode).json({ message: err.message });
   }
