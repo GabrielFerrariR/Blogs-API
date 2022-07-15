@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const { CustomError } = require('../middlewares/error');
-const { Category, BlogPost, PostCategory } = require('../models');
+const { User, Category, BlogPost, PostCategory } = require('../models');
 
 const postSchema = Joi.object({
   title: Joi.string().required(),
@@ -32,6 +32,23 @@ const create = async (body, user) => {
   return post;
 };
 
+const show = async () => {
+  const posts = await BlogPost.findAll({
+    include: [{
+      model: User,
+      as: 'user',
+      attributes: {
+        exclude: ['password'],
+      },
+    }, {
+      model: Category,
+      as: 'categories',
+    }],
+  });
+  return posts;
+};
+
 module.exports = {
   create,
+  show,
 };
