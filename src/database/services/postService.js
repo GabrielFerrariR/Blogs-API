@@ -25,6 +25,19 @@ const categoryValidation = async (categories) => {
  return (isValid.includes(null)); 
 };
 
+const postQuery = {
+  include: [{
+    model: User,
+    as: 'user',
+    attributes: {
+      exclude: ['password'],
+    },
+  }, {
+    model: Category,
+    as: 'categories',
+  }],
+};
+
 const create = async (body, user) => {
   const { error } = postSchema.validate(body);
   if (error) throw new CustomError(400, error.details[0].message);
@@ -32,45 +45,20 @@ const create = async (body, user) => {
   const { categoryIds, ...fields } = body;
   const isAnyInvalid = await categoryValidation(categoryIds);
   if (isAnyInvalid) throw new CustomError(400, '"categoryIds" not found');
-  
-  const { id } = user.dataValues;
-  const post = await BlogPost.create({ ...fields, userId: id });
+  const post = await BlogPost.create({ ...fields, userId: user.id });
   categoryIds.map(async (categoryId) => {
     await PostCategory.create({ postId: post.id, categoryId });
   });
-
   return post;
 };
 
 const show = async () => {
-  const posts = await BlogPost.findAll({
-    include: [{
-      model: User,
-      as: 'user',
-      attributes: {
-        exclude: ['password'],
-      },
-    }, {
-      model: Category,
-      as: 'categories',
-    }],
-  });
+  const posts = await BlogPost.findAll(postQuery);
   return posts;
 };
 
 const getById = async (id) => {
-  const post = await BlogPost.findByPk(id, {
-    include: [{
-      model: User,
-      as: 'user',
-      attributes: {
-        exclude: ['password'],
-      },
-    }, {
-      model: Category,
-      as: 'categories',
-    }],
-  });
+  const post = await BlogPost.findByPk(id, postQuery);
   if (!post) throw new CustomError(404, 'Post does not exist');
   return post;
 };
@@ -78,10 +66,9 @@ const getById = async (id) => {
 const update = async (body, user, postId) => {
   const { error } = upPostSchema.validate(body);
   if (error) throw new CustomError(400, error.details[0].message);
-  const { id } = user.dataValues;
   const [post] = await BlogPost.update(body, {
     where: { 
-      [Op.and]: [{ id: postId }, { userId: id }], 
+      [Op.and]: [{ id: postId }, { userId: user.id }], 
     },
   });
   if (!post) throw new CustomError(401, 'Unauthorized user');
@@ -90,11 +77,10 @@ const update = async (body, user, postId) => {
 };
 
 const remove = async (postId, user) => {
-  const { id } = user.dataValues;
   await getById(postId);
   const deleted = await BlogPost.destroy({
     where: { 
-      [Op.and]: [{ id: postId }, { userId: id }], 
+      [Op.and]: [{ id: postId }, { userId: user.id }], 
     },
   });
   if (!deleted) throw new CustomError(401, 'Unauthorized user');
@@ -111,8 +97,7 @@ const showByQ = async (query) => {
         },
       }],
     },
-    include: [{ model: User, as: 'user', attributes: { exclude: ['password'] },
-    }, { model: Category, as: 'categories' }],
+    ...postQuery,
   });
   return queryResult;
 };
